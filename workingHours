@@ -1,0 +1,36 @@
+$wsh = New-Object -ComObject Wscript.Shell
+
+# Function to check if the current time is between 8:30 and 17:00
+function IsWorkingHours {
+    $currentTime = Get-Date
+    $startTime = [DateTime]::Parse("08:30 AM")
+    $endTime = [DateTime]::Parse("05:00 PM")
+    
+    return ($currentTime -ge $startTime -and $currentTime -lt $endTime)
+}
+
+# Main loop
+while ($TRUE) {
+    if (IsWorkingHours) {
+        # Define the working session length (random 30-80 minutes)
+        $sessionLength = Get-Random -Minimum 1800 -Maximum 4800
+        $sessionEndTime = (Get-Date).AddSeconds($sessionLength)
+
+        # Loop for the duration of the session
+        while (IsWorkingHours -and (Get-Date) -lt $sessionEndTime) {
+            # Simulate pressing Scroll Lock twice
+            $wsh.SendKeys("{SCROLLLOCK}")
+            $wsh.SendKeys("{SCROLLLOCK}")
+
+            # Sleep for a random time between 45.1 and 110.99 seconds
+            $sleepDuration = Get-Random -Minimum 45.1 -Maximum 110.99
+            Start-Sleep -Seconds $sleepDuration
+        }
+
+        # Pause for 10 minutes after the session ends
+        Start-Sleep -Seconds 600
+    } else {
+        # Sleep for 5 minutes if it's outside working hours
+        Start-Sleep -Seconds 300
+    }
+}
